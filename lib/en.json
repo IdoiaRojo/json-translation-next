@@ -1,0 +1,13 @@
+{
+    "auth": {
+        "image_text": "We take care of your well-being",
+        "logout": {
+            "confirm": {
+                "title": "Do You Want to Log Out",
+                "text": "You are about to log out of your account"
+            }
+        },
+        "password_forgot": "Forgot Password",
+        "submit": "Log In"
+    }
+}
