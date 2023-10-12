@@ -70,6 +70,7 @@ const translateChunk = async ({
   setChunksStatus;
 }) => {
   const key = chunk.key;
+  const startTime = Date.now();
 
   try {
     const translation = await apiCall({
@@ -78,19 +79,21 @@ const translateChunk = async ({
       outputLanguage,
       mode,
     });
-
+    const time = Date.now() - startTime;
     if (translation) {
       setTranslations((prevTranslations) => ({
         ...prevTranslations,
         [key]: translation,
       }));
-      updateChunkStatus({key, status: 'completed', setChunksStatus});
+
+      updateChunkStatus({key, status: 'completed', setChunksStatus, time});
     } else {
-      updateChunkStatus({key, status: 'error', setChunksStatus});
+      updateChunkStatus({key, status: 'error', setChunksStatus, time});
     }
   } catch (error) {
+    const time = Date.now() - startTime;
     console.error('Error al traducir el chunk:', error);
-    updateChunkStatus({key, status: 'error', setChunksStatus});
+    updateChunkStatus({key, status: 'error', setChunksStatus, time});
   }
 };
 
@@ -99,15 +102,17 @@ const updateChunkStatus = ({
   status,
   translation,
   setChunksStatus,
+  time,
 }: {
   key: string;
-  status: 'pending' | 'completed' | 'error';
-  translation?: any;
+  status: TranslationChunk['status'];
+  translation?: TranslationChunk['translation'];
+  time: TranslationChunk['time'];
   setChunksStatus;
 }) => {
   setChunksStatus((prevChunksStatus) =>
     prevChunksStatus.map((chunk) =>
-      chunk.key === key ? {...chunk, status, translation} : chunk
+      chunk.key === key ? {...chunk, status, translation, time} : chunk
     )
   );
 };

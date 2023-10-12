@@ -1,3 +1,4 @@
+import {formatTime} from '@/helpers/formatTime';
 import {TranslationChunk} from '@/types/TranslationChunk';
 import Button from './Button';
 import {StepIcon} from './status/StepIcon';
@@ -32,7 +33,9 @@ export const ChunkVerticalStepper = ({
             <p className='font-bold text-[13px] leading-[13px]'>
               {chunkStatus.key}
             </p>
-            <span className='text-[12px] leading-tight'>22s</span>
+            <span className='text-[12px] leading-tight'>
+              {formatTime(chunkStatus.time)}
+            </span>
           </div>
           {chunkStatus.status === 'error' && (
             <>
