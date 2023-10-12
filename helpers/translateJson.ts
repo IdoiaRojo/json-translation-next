@@ -52,7 +52,7 @@ export const translateJSON = async ({
   reader.readAsText(jsonFile);
 };
 
-const translateChunk = async ({
+export const translateChunk = async ({
   chunk,
   jsonData,
   inputLanguage,
@@ -71,7 +71,8 @@ const translateChunk = async ({
 }) => {
   const key = chunk.key;
   const startTime = Date.now();
-
+  console.log(chunk, key);
+  updateChunkStatus({key, status: 'pending', setChunksStatus});
   try {
     const translation = await apiCall({
       text: JSON.stringify(jsonData[key]),
@@ -107,7 +108,7 @@ const updateChunkStatus = ({
   key: string;
   status: TranslationChunk['status'];
   translation?: TranslationChunk['translation'];
-  time: TranslationChunk['time'];
+  time?: TranslationChunk['time'];
   setChunksStatus;
 }) => {
   setChunksStatus((prevChunksStatus) =>

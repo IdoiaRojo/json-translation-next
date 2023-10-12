@@ -1,4 +1,5 @@
 import {formatTime} from '@/helpers/formatTime';
+import {translateChunk} from '@/helpers/translateJson';
 import {TranslationChunk} from '@/types/TranslationChunk';
 import Button from './Button';
 import {StepIcon} from './status/StepIcon';
@@ -6,9 +7,19 @@ import {StepIcon} from './status/StepIcon';
 export const ChunkVerticalStepper = ({
   chunksStatus,
   jsonData,
+  inputLanguage,
+  outputLanguage,
+  mode,
+  setTranslations,
+  setChunksStatus,
 }: {
   chunksStatus: TranslationChunk[];
   jsonData: any;
+  inputLanguage: any;
+  outputLanguage: any;
+  mode: any;
+  setTranslations: any;
+  setChunksStatus: any;
 }) => {
   return (
     <div className='vertical-stepper relative bg-grey-100 p-2'>
@@ -18,14 +29,6 @@ export const ChunkVerticalStepper = ({
           className={`step h-16 bg-white border-b border-b-grey-200 flex items-center justify-start rounded-sm p-2 transition-all hover:bg-grey-100 ${
             chunkStatus.status === 'completed' ? 'completed' : ''
           }`}
-          // style={{
-          //   color:
-          //     chunkStatus.status === 'completed'
-          //       ? 'green'
-          //       : chunkStatus.status === 'error'
-          //       ? 'red'
-          //       : 'orange',
-          // }}
         >
           <StepIcon chunkStatus={chunkStatus} />
 
@@ -34,28 +37,27 @@ export const ChunkVerticalStepper = ({
               {chunkStatus.key}
             </p>
             <span className='text-[12px] leading-tight'>
-              {formatTime(chunkStatus.time)}
+              {chunkStatus.time ? formatTime(chunkStatus.time) : ''}
             </span>
           </div>
           {chunkStatus.status === 'error' && (
             <>
-              <Button size='small'>Retry</Button>
-              {/* <button
-                className='rounded-md border border-white ml-4 px-2 text-white flex items-center'
+              <Button
+                size='small'
                 onClick={() =>
-                  // translateChunk({
-                  //   chunkStatus,
-                  //   jsonData,
-                  //   setTranslations,
-                  //   inputLanguage,
-                  //   outputLanguage,
-                  //   mode,
-                  // })
-                  console.log('translateChunk')
+                  translateChunk({
+                    chunk: chunkStatus,
+                    jsonData,
+                    inputLanguage,
+                    outputLanguage,
+                    mode,
+                    setTranslations,
+                    setChunksStatus,
+                  })
                 }
               >
                 Retry
-              </button> */}
+              </Button>
             </>
           )}
         </div>

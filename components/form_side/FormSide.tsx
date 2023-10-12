@@ -74,6 +74,11 @@ export const FormSide = ({
               <ChunkVerticalStepper
                 chunksStatus={chunksStatus}
                 jsonData={jsonData}
+                inputLanguage={inputLanguage}
+                outputLanguage={outputLanguage}
+                mode={mode}
+                setTranslations={setTranslations}
+                setChunksStatus={setChunksStatus}
               />
 
               {statusTranslation === 'finished' && (
