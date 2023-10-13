@@ -1,28 +1,33 @@
 import {downloadTranslatedJSON} from '@/helpers/downloadJson';
 import {translateJSON} from '@/helpers/translateJson';
-import {TranslationChunk} from '@/types/TranslationChunk';
-import {TranslationData} from '@/types/TranslationData';
+import {ChunkToTranslate} from '@/types/ChunkToTranslate';
+import {LanguagesAvailable} from '@/types/LanguagesAvailable';
+import {Translation} from '@/types/Translation';
+import {TranslationStatus} from '@/types/TranslationStatus';
+import {Mode} from 'fs';
 import {SetStateAction, useState} from 'react';
 import Button from '../Button';
 import {ChunkVerticalStepper} from '../ChunkVerticalStepper';
 import {ProgressBar} from '../ProgressBar';
 
 export const FormSide = ({
-  translations,
-  setTranslations,
+  translation,
+  setTranslation,
 }: {
-  translations: TranslationData;
-  setTranslations: React.Dispatch<SetStateAction<TranslationData>>;
+  translation: Translation;
+  setTranslation: React.Dispatch<SetStateAction<Translation>>;
 }) => {
-  const [statusTranslation, setStatusTranslation] = useState<
-    'default' | 'loading' | 'finished'
-  >('default');
-  const [mode, setMode] = useState<'translate' | 'fillEmpty'>('translate');
-  const [inputLanguage, setInputLanguage] = useState('es');
-  const [outputLanguage, setOutputLanguage] = useState('de');
+  const [translationStatus, setTranslationStatus] =
+    useState<TranslationStatus>('default');
+  const [mode, setMode] = useState<Mode>('translate');
+  const [inputLanguage, setInputLanguage] = useState<LanguagesAvailable>('es');
+  const [outputLanguage, setOutputLanguage] =
+    useState<LanguagesAvailable>('de');
   const [jsonFile, setJsonFile] = useState(null);
-  const [jsonData, setJsonData] = useState<TranslationData | null>(null);
-  const [chunksStatus, setChunksStatus] = useState<TranslationChunk[]>([]);
+  const [jsonData, setJsonData] = useState<Translation | null>(null);
+  const [translationChunks, setChunkToTranslates] = useState<
+    ChunkToTranslate[]
+  >([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files[0];
@@ -33,24 +38,24 @@ export const FormSide = ({
     translateJSON({
       jsonFile,
       setJsonData,
-      setTranslations,
-      setChunksStatus,
-      setStatusTranslation,
+      setTranslation,
+      setChunkToTranslates,
+      setTranslationStatus,
       inputLanguage,
       outputLanguage,
       mode,
     });
 
   const progressPercentage =
-    (chunksStatus.filter((chunk) => chunk.status === 'completed').length /
-      chunksStatus.length) *
+    (translationChunks.filter((chunk) => chunk.status === 'completed').length /
+      translationChunks.length) *
     100;
   const handleDownloadTranslatedJSON = () => {
-    if (!translations) {
+    if (!translation) {
       alert('No hay contenido traducido para descargar.');
       return;
     }
-    downloadTranslatedJSON(translations);
+    downloadTranslatedJSON(translation);
   };
   return (
     <>
@@ -62,26 +67,26 @@ export const FormSide = ({
         <Button onClick={handleTranslateJson}>Translate</Button>
       </div>
       <div className='m-10 w-[400px]'>
-        {statusTranslation === 'loading' && (
+        {translationStatus === 'loading' && (
           <p className=''>
             This process could take some minutes, please wait patiently
           </p>
         )}
         <div className='my-4'>
-          {chunksStatus.length > 0 && (
+          {translationChunks.length > 0 && (
             <>
               <ProgressBar progressPercentage={progressPercentage} />
               <ChunkVerticalStepper
-                chunksStatus={chunksStatus}
+                translationChunks={translationChunks}
                 jsonData={jsonData}
                 inputLanguage={inputLanguage}
                 outputLanguage={outputLanguage}
                 mode={mode}
-                setTranslations={setTranslations}
-                setChunksStatus={setChunksStatus}
+                setTranslation={setTranslation}
+                setChunkToTranslates={setChunkToTranslates}
               />
 
-              {statusTranslation === 'finished' && (
+              {translationStatus === 'finished' && (
                 <div className='mt-4'>
                   <Button onClick={handleDownloadTranslatedJSON}>
                     Download JSON

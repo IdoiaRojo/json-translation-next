@@ -6,26 +6,28 @@ import {Toaster} from 'react-hot-toast';
 
 interface Props {}
 
-export interface TranslationChunk {
+export interface ChunkToTranslate {
   key: string;
   status: 'pending' | 'completed' | 'error';
   translation?: any;
 }
-interface TranslationData {
+interface Translation {
   [key: string]: any;
 }
 
 const Home: NextPage<Props> = () => {
-  const [statusTranslation, setStatusTranslation] = useState<
+  const [translationStatus, setTranslationStatus] = useState<
     'default' | 'loading' | 'finished'
   >('default');
   const [mode, setMode] = useState<'translate' | 'fillEmpty'>('translate');
   const [inputLanguage, setInputLanguage] = useState('es');
   const [outputLanguage, setOutputLanguage] = useState('de');
   const [jsonFile, setJsonFile] = useState(null);
-  const [jsonData, setJsonData] = useState<TranslationData | null>(null);
-  const [chunksStatus, setChunksStatus] = useState<TranslationChunk[]>([]);
-  const [translations, setTranslations] = useState<TranslationData>({});
+  const [jsonData, setJsonData] = useState<Translation | null>(null);
+  const [translationChunks, setChunkToTranslates] = useState<
+    ChunkToTranslate[]
+  >([]);
+  const [translation, setTranslation] = useState<Translation>({});
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files[0];
@@ -67,14 +69,14 @@ const Home: NextPage<Props> = () => {
     }
   };
 
-  const translateChunk = async (chunk: TranslationChunk, jsonData) => {
+  const translateChunk = async (chunk: ChunkToTranslate, jsonData) => {
     const key = chunk.key;
 
     try {
       const translation = await handleApiCall(JSON.stringify(jsonData[key]));
 
       if (translation) {
-        setTranslations((prevTranslations) => ({
+        setTranslation((prevTranslations) => ({
           ...prevTranslations,
           [key]: translation,
         }));
@@ -93,7 +95,7 @@ const Home: NextPage<Props> = () => {
     status: 'pending' | 'completed' | 'error',
     translation?: any
   ) => {
-    setChunksStatus((prevChunksStatus) =>
+    setChunkToTranslates((prevChunksStatus) =>
       prevChunksStatus.map((chunk) =>
         chunk.key === key ? {...chunk, status, translation} : chunk
       )
@@ -112,23 +114,23 @@ const Home: NextPage<Props> = () => {
       if (event.target) {
         const fileContent = event.target.result as string;
         try {
-          const jsonData: TranslationData = JSON.parse(fileContent);
+          const jsonData: Translation = JSON.parse(fileContent);
           setJsonData(jsonData);
-          setTranslations({});
-          const initialChunks: TranslationChunk[] = Object.keys(jsonData).map(
+          setTranslation({});
+          const initialChunks: ChunkToTranslate[] = Object.keys(jsonData).map(
             (key) => ({
               key,
               status: 'pending',
             })
           );
-          setChunksStatus(initialChunks);
-          setStatusTranslation('loading');
+          setChunkToTranslates(initialChunks);
+          setTranslationStatus('loading');
 
           for (const chunk of initialChunks) {
             await translateChunk(chunk, jsonData);
           }
 
-          setStatusTranslation('finished');
+          setTranslationStatus('finished');
         } catch (error) {
           console.error('Error al parsear el archivo JSON:', error);
         }
@@ -139,18 +141,18 @@ const Home: NextPage<Props> = () => {
   };
 
   const progressPercentage =
-    (chunksStatus.filter((chunk) => chunk.status === 'completed').length /
-      chunksStatus.length) *
+    (translationChunks.filter((chunk) => chunk.status === 'completed').length /
+      translationChunks.length) *
     100;
 
   const downloadTranslatedJSON = () => {
-    if (!translations) {
+    if (!translation) {
       alert('No hay contenido traducido para descargar.');
       return;
     }
 
     // Crear un Blob con el contenido traducido
-    const translatedBlob = new Blob([JSON.stringify(translations)], {
+    const translatedBlob = new Blob([JSON.stringify(translation)], {
       type: 'application/json',
     });
 
@@ -188,21 +190,21 @@ const Home: NextPage<Props> = () => {
           </button>
         </div>
         <div className='m-10 w-[400px]'>
-          {statusTranslation === 'loading' && (
+          {translationStatus === 'loading' && (
             <p className=''>
               This process could take some minutes, please wait patiently
             </p>
           )}
           <div className='my-4'>
-            {chunksStatus.length > 0 && (
+            {translationChunks.length > 0 && (
               <>
                 <ProgressBar progressPercentage={progressPercentage} />
                 <ChunkVerticalStepper
-                  chunksStatus={chunksStatus}
+                  translationChunks={translationChunks}
                   jsonData={jsonData}
                 />
 
-                {statusTranslation === 'finished' && (
+                {translationStatus === 'finished' && (
                   <>
                     <button
                       className='rounded-md border border-white px-4 py-2'
@@ -212,7 +214,7 @@ const Home: NextPage<Props> = () => {
                     </button>
                     <p>Traducciones:</p>
                     <pre className='whitespace-pre-wrap' style={{}}>
-                      {JSON.stringify(translations, null, 2)}
+                      {JSON.stringify(translation, null, 2)}
                     </pre>
                   </>
                 )}

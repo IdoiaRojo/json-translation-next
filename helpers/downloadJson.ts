@@ -1,7 +1,7 @@
-import {TranslationData} from '@/types/TranslationData';
+import {Translation} from '@/types/Translation';
 
-export const downloadTranslatedJSON = (translations: TranslationData) => {
-  const translatedBlob = new Blob([JSON.stringify(translations)], {
+export const downloadTranslatedJSON = (translation: Translation) => {
+  const translatedBlob = new Blob([JSON.stringify(translation)], {
     type: 'application/json',
   });
 

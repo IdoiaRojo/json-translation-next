@@ -1,13 +1,13 @@
-import {TranslationChunk} from '@/types/TranslationChunk';
-import {TranslationData} from '@/types/TranslationData';
+import {ChunkToTranslate} from '@/types/ChunkToTranslate';
+import {Translation} from '@/types/Translation';
 import {apiCall} from './apiCall';
 
 export const translateJSON = async ({
   jsonFile,
   setJsonData,
-  setTranslations,
-  setChunksStatus,
-  setStatusTranslation,
+  setTranslation,
+  setChunkToTranslates,
+  setTranslationStatus,
   inputLanguage,
   outputLanguage,
   mode,
@@ -18,17 +18,17 @@ export const translateJSON = async ({
     if (event.target) {
       const fileContent = event.target.result as string;
       try {
-        const jsonData: TranslationData = JSON.parse(fileContent);
+        const jsonData: Translation = JSON.parse(fileContent);
         setJsonData(jsonData);
-        setTranslations({});
-        const initialChunks: TranslationChunk[] = Object.keys(jsonData).map(
+        setTranslation({});
+        const initialChunks: ChunkToTranslate[] = Object.keys(jsonData).map(
           (key) => ({
             key,
             status: 'pending',
           })
         );
-        setChunksStatus(initialChunks);
-        setStatusTranslation('loading');
+        setChunkToTranslates(initialChunks);
+        setTranslationStatus('loading');
 
         for (const chunk of initialChunks) {
           await translateChunk({
@@ -37,12 +37,12 @@ export const translateJSON = async ({
             inputLanguage,
             outputLanguage,
             mode,
-            setTranslations,
-            setChunksStatus,
+            setTranslation,
+            setChunkToTranslates,
           });
         }
 
-        setStatusTranslation('finished');
+        setTranslationStatus('finished');
       } catch (error) {
         console.error('Error al parsear el archivo JSON:', error);
       }
@@ -58,21 +58,21 @@ export const translateChunk = async ({
   inputLanguage,
   outputLanguage,
   mode,
-  setTranslations,
-  setChunksStatus,
+  setTranslation,
+  setChunkToTranslates,
 }: {
-  chunk: TranslationChunk;
+  chunk: ChunkToTranslate;
   jsonData;
   inputLanguage;
   outputLanguage;
   mode;
-  setTranslations;
-  setChunksStatus;
+  setTranslation;
+  setChunkToTranslates;
 }) => {
   const key = chunk.key;
   const startTime = Date.now();
   console.log(chunk, key);
-  updateChunkStatus({key, status: 'pending', setChunksStatus});
+  updateChunkStatus({key, status: 'pending', setChunkToTranslates});
   try {
     const translation = await apiCall({
       text: JSON.stringify(jsonData[key]),
@@ -82,19 +82,19 @@ export const translateChunk = async ({
     });
     const time = Date.now() - startTime;
     if (translation) {
-      setTranslations((prevTranslations) => ({
+      setTranslation((prevTranslations) => ({
         ...prevTranslations,
         [key]: translation,
       }));
 
-      updateChunkStatus({key, status: 'completed', setChunksStatus, time});
+      updateChunkStatus({key, status: 'completed', setChunkToTranslates, time});
     } else {
-      updateChunkStatus({key, status: 'error', setChunksStatus, time});
+      updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
     }
   } catch (error) {
     const time = Date.now() - startTime;
     console.error('Error al traducir el chunk:', error);
-    updateChunkStatus({key, status: 'error', setChunksStatus, time});
+    updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
   }
 };
 
@@ -102,16 +102,16 @@ const updateChunkStatus = ({
   key,
   status,
   translation,
-  setChunksStatus,
+  setChunkToTranslates,
   time,
 }: {
   key: string;
-  status: TranslationChunk['status'];
-  translation?: TranslationChunk['translation'];
-  time?: TranslationChunk['time'];
-  setChunksStatus;
+  status: ChunkToTranslate['status'];
+  translation?: ChunkToTranslate['translation'];
+  time?: ChunkToTranslate['time'];
+  setChunkToTranslates;
 }) => {
-  setChunksStatus((prevChunksStatus) =>
+  setChunkToTranslates((prevChunksStatus) =>
     prevChunksStatus.map((chunk) =>
       chunk.key === key ? {...chunk, status, translation, time} : chunk
     )

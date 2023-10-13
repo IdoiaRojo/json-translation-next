@@ -1,8 +1,8 @@
 import {CheckCircle, WarningCircle} from '@phosphor-icons/react';
-import {TranslationChunk} from '../../types/TranslationChunk';
+import {ChunkToTranslate} from '../../types/ChunkToTranslate';
 import {StepLoading} from './StepLoading';
 
-export const StepIcon = ({chunkStatus}: {chunkStatus: TranslationChunk}) => {
+export const StepIcon = ({chunkStatus}: {chunkStatus: ChunkToTranslate}) => {
   return (
     <span
       className={`mr-2 ${

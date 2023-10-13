@@ -1,29 +1,29 @@
 import {formatTime} from '@/helpers/formatTime';
 import {translateChunk} from '@/helpers/translateJson';
-import {TranslationChunk} from '@/types/TranslationChunk';
+import {ChunkToTranslate} from '@/types/ChunkToTranslate';
 import Button from './Button';
 import {StepIcon} from './status/StepIcon';
 
 export const ChunkVerticalStepper = ({
-  chunksStatus,
+  translationChunks,
   jsonData,
   inputLanguage,
   outputLanguage,
   mode,
-  setTranslations,
-  setChunksStatus,
+  setTranslation,
+  setChunkToTranslates,
 }: {
-  chunksStatus: TranslationChunk[];
+  translationChunks: ChunkToTranslate[];
   jsonData: any;
   inputLanguage: any;
   outputLanguage: any;
   mode: any;
-  setTranslations: any;
-  setChunksStatus: any;
+  setTranslation: any;
+  setChunkToTranslates: any;
 }) => {
   return (
     <div className='vertical-stepper relative bg-grey-100 p-2'>
-      {chunksStatus.map((chunkStatus, index) => (
+      {translationChunks.map((chunkStatus, index) => (
         <div
           key={index}
           className={`step h-16 bg-white border-b border-b-grey-200 flex items-center justify-start rounded-sm p-2 transition-all hover:bg-grey-100 ${
@@ -51,8 +51,8 @@ export const ChunkVerticalStepper = ({
                     inputLanguage,
                     outputLanguage,
                     mode,
-                    setTranslations,
-                    setChunksStatus,
+                    setTranslation,
+                    setChunkToTranslates,
                   })
                 }
               >
