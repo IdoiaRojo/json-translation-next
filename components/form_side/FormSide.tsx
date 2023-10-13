@@ -1,28 +1,32 @@
-import {downloadTranslatedJSON} from '@/helpers/downloadJson';
+import {checkFileName} from '@/helpers/checkFileName';
 import {translateJSON} from '@/helpers/translateJson';
 import {ChunkToTranslate} from '@/types/ChunkToTranslate';
-import {LanguagesAvailable} from '@/types/LanguagesAvailable';
+import {FormTranslation} from '@/types/FormTranslation';
+import {LanguagesAvailable, languageNames} from '@/types/LanguagesAvailable';
 import {Translation} from '@/types/Translation';
-import {TranslationStatus} from '@/types/TranslationStatus';
+import {ArrowRight} from '@phosphor-icons/react';
 import {Mode} from 'fs';
-import {SetStateAction, useState} from 'react';
+import {useState} from 'react';
+import toast from 'react-hot-toast';
 import Button from '../Button';
 import {ChunkVerticalStepper} from '../ChunkVerticalStepper';
+import {Header} from '../Header';
 import {ProgressBar} from '../ProgressBar';
+import {LanguageSelect} from './LanguageSelect';
 
 export const FormSide = ({
-  translation,
+  translationStatus,
   setTranslation,
+  setTranslationStatus,
 }: {
-  translation: Translation;
-  setTranslation: React.Dispatch<SetStateAction<Translation>>;
+  translationStatus: FormTranslation['translationStatus'];
+  setTranslation: FormTranslation['setTranslation'];
+  setTranslationStatus: FormTranslation['setTranslationStatus'];
 }) => {
-  const [translationStatus, setTranslationStatus] =
-    useState<TranslationStatus>('default');
   const [mode, setMode] = useState<Mode>('translate');
   const [inputLanguage, setInputLanguage] = useState<LanguagesAvailable>('es');
   const [outputLanguage, setOutputLanguage] =
-    useState<LanguagesAvailable>('de');
+    useState<LanguagesAvailable>('en');
   const [jsonFile, setJsonFile] = useState(null);
   const [jsonData, setJsonData] = useState<Translation | null>(null);
   const [translationChunks, setChunkToTranslates] = useState<
@@ -30,11 +34,24 @@ export const FormSide = ({
   >([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     const file = event.target.files[0];
+    const fileName = file.name.split('.')[0];
+    if (checkFileName(fileName)) {
+      setInputLanguage(fileName);
+      toast.success(
+        `${languageNames[fileName]} automatically detected as file language`
+      );
+    }
+
     setJsonFile(file);
   };
 
-  const handleTranslateJson = () =>
+  const handleTranslateJson = () => {
+    if (inputLanguage === outputLanguage) {
+      toast.error(`Input and output language cannot be the same`);
+      return null;
+    }
     translateJSON({
       jsonFile,
       setJsonData,
@@ -45,28 +62,40 @@ export const FormSide = ({
       outputLanguage,
       mode,
     });
+  };
 
   const progressPercentage =
     (translationChunks.filter((chunk) => chunk.status === 'completed').length /
       translationChunks.length) *
     100;
-  const handleDownloadTranslatedJSON = () => {
-    if (!translation) {
-      alert('No hay contenido traducido para descargar.');
-      return;
-    }
-    downloadTranslatedJSON(translation);
-  };
+
   return (
     <>
-      <div className='m-10'>
-        <h1 className='text-[20px] font-bold'>Translate your JSON</h1>
-      </div>
-      <div className='m-10 flex'>
+      <Header>
+        <div>
+          <h1 className='text-[20px] font-bold'>Translate your JSON</h1>
+        </div>
+      </Header>
+      <div className='my-10 flex items-center'>
         <input type='file' onChange={handleFileChange} accept='.json' />
+      </div>
+      <div className='my-10 flex items-center justify-between'>
+        <div className='flex items-center'>
+          <LanguageSelect
+            selectedLanguage={inputLanguage}
+            onLanguageChange={setInputLanguage}
+          />
+          <span className='mx-2'>
+            <ArrowRight />
+          </span>
+          <LanguageSelect
+            selectedLanguage={outputLanguage}
+            onLanguageChange={setOutputLanguage}
+          />
+        </div>
         <Button onClick={handleTranslateJson}>Translate</Button>
       </div>
-      <div className='m-10 w-[400px]'>
+      <div className='my-10 w-[400px]'>
         {translationStatus === 'loading' && (
           <p className=''>
             This process could take some minutes, please wait patiently
@@ -85,14 +114,6 @@ export const FormSide = ({
                 setTranslation={setTranslation}
                 setChunkToTranslates={setChunkToTranslates}
               />
-
-              {translationStatus === 'finished' && (
-                <div className='mt-4'>
-                  <Button onClick={handleDownloadTranslatedJSON}>
-                    Download JSON
-                  </Button>
-                </div>
-              )}
             </>
           )}
         </div>

@@ -19,7 +19,7 @@ const Button: FC<PropsWithChildren<Props>> = ({
       className={`rounded-lg ${
         disabled
           ? 'bg-gray-300 opacity-60 cursor-not-allowed'
-          : 'border border-grey-200 cursor-pointer'
+          : 'border border-grey-900 cursor-pointer'
       } flex ${
         size === 'small' ? 'py-1 px-2' : 'py-2 px-3'
       } transition-all hover:bg-grey-100 ${props?.className}`}

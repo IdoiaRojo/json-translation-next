@@ -6,13 +6,14 @@ import {TranslationStatus} from './TranslationStatus';
 
 export interface FormTranslation {
   chunksToTranslate: ChunkToTranslate[];
+  inputLanguage: LanguagesAvailable;
   jsonData: Translation | null;
   jsonFile;
+  mode;
+  outputLanguage: LanguagesAvailable;
+  setChunkToTranslates: React.Dispatch<SetStateAction<ChunkToTranslate[]>>;
   setJsonData: React.Dispatch<SetStateAction<Translation>>;
   setTranslation: React.Dispatch<SetStateAction<Translation>>;
-  setChunkToTranslates: React.Dispatch<SetStateAction<ChunkToTranslate[]>>;
   setTranslationStatus: React.Dispatch<SetStateAction<TranslationStatus>>;
-  inputLanguage: LanguagesAvailable;
-  outputLanguage: LanguagesAvailable;
-  mode;
+  translationStatus: TranslationStatus;
 }
