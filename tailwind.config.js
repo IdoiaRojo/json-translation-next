@@ -55,7 +55,7 @@ module.exports = {
           100: '#deebff',
         },
         success: '#36b27e',
-        pending: 'blue',
+        loading: '#0165ff',
         error: '#ff5630',
       },
     },

@@ -38,7 +38,11 @@ export const ChunkVerticalStepper = ({
               {chunkStatus.key}
             </p>
             <span className='text-[12px] leading-tight'>
-              {chunkStatus.time ? formatTime(chunkStatus.time) : ''}
+              {chunkStatus.time
+                ? formatTime(chunkStatus.time)
+                : chunkStatus.status === 'loading'
+                ? 'Translating...'
+                : ''}
             </span>
           </div>
           {chunkStatus.status === 'error' && (

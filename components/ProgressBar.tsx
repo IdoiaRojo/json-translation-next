@@ -8,7 +8,7 @@ export const ProgressBar = ({
       <div
         style={{
           width: '100%',
-          height: '20px',
+          height: '10px',
           backgroundColor: '#ccc',
           textAlign: 'center',
           borderRadius: '6px',
@@ -18,7 +18,7 @@ export const ProgressBar = ({
           style={{
             width: `${progressPercentage}%`,
             height: '100%',
-            backgroundColor: 'green',
+            backgroundColor: '#36b27e',
             borderRadius: '6px',
           }}
         ></div>

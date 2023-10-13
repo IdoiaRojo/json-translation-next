@@ -73,7 +73,7 @@ export const translateChunk = async ({
   const key = chunk.key;
   const startTime = Date.now();
   console.log(chunk, key);
-  updateChunkStatus({key, status: 'pending', setChunkToTranslates});
+  updateChunkStatus({key, status: 'loading', setChunkToTranslates});
   try {
     const translation = await apiCall({
       text: JSON.stringify(jsonData[key]),

@@ -48,8 +48,12 @@ export const FormSide = ({
   };
 
   const handleTranslateJson = () => {
-    if (inputLanguage === outputLanguage) {
-      toast.error(`Input and output language cannot be the same`);
+    if (!jsonFile || inputLanguage === outputLanguage) {
+      toast.error(
+        !jsonFile
+          ? 'You must upload a file to translate'
+          : 'Input and output language cannot be the same'
+      );
       return null;
     }
     translateJSON({
@@ -95,7 +99,7 @@ export const FormSide = ({
         </div>
         <Button onClick={handleTranslateJson}>Translate</Button>
       </div>
-      <div className='my-10 w-[400px]'>
+      <div className='my-10'>
         {translationStatus === 'loading' && (
           <p className=''>
             This process could take some minutes, please wait patiently
