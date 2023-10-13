@@ -83,10 +83,20 @@ export const translateChunk = async ({
     });
     const time = Date.now() - startTime;
     if (translation) {
-      setTranslation((prevTranslations) => ({
-        ...prevTranslations,
-        [key]: translation,
-      }));
+      setTranslation((prevTranslations) => {
+        const newTranslation = {...prevTranslations, [key]: translation};
+        const sortedTranslations = Object.keys(newTranslation)
+          .sort()
+          .reduce((acc, curr) => {
+            acc[curr] = prevTranslations[curr];
+            return acc;
+          }, {});
+
+        return {
+          ...sortedTranslations,
+          [key]: translation,
+        };
+      });
 
       updateChunkStatus({key, status: 'completed', setChunkToTranslates, time});
     } else {
