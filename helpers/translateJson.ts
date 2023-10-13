@@ -1,4 +1,5 @@
 import {ChunkToTranslate} from '@/types/ChunkToTranslate';
+import {FormTranslation} from '@/types/FormTranslation';
 import {Translation} from '@/types/Translation';
 import {apiCall} from './apiCall';
 
@@ -62,12 +63,12 @@ export const translateChunk = async ({
   setChunkToTranslates,
 }: {
   chunk: ChunkToTranslate;
-  jsonData;
-  inputLanguage;
-  outputLanguage;
-  mode;
-  setTranslation;
-  setChunkToTranslates;
+  jsonData: FormTranslation['jsonData'];
+  inputLanguage: FormTranslation['inputLanguage'];
+  outputLanguage: FormTranslation['outputLanguage'];
+  mode: FormTranslation['mode'];
+  setTranslation: FormTranslation['setTranslation'];
+  setChunkToTranslates: FormTranslation['setChunkToTranslates'];
 }) => {
   const key = chunk.key;
   const startTime = Date.now();

@@ -1,6 +1,7 @@
 import {formatTime} from '@/helpers/formatTime';
 import {translateChunk} from '@/helpers/translateJson';
 import {ChunkToTranslate} from '@/types/ChunkToTranslate';
+import {FormTranslation} from '@/types/FormTranslation';
 import Button from './Button';
 import {StepIcon} from './status/StepIcon';
 
@@ -14,12 +15,12 @@ export const ChunkVerticalStepper = ({
   setChunkToTranslates,
 }: {
   translationChunks: ChunkToTranslate[];
-  jsonData: any;
-  inputLanguage: any;
-  outputLanguage: any;
-  mode: any;
-  setTranslation: any;
-  setChunkToTranslates: any;
+  jsonData: FormTranslation['jsonData'];
+  inputLanguage: FormTranslation['inputLanguage'];
+  outputLanguage: FormTranslation['outputLanguage'];
+  mode: FormTranslation['mode'];
+  setTranslation: FormTranslation['setTranslation'];
+  setChunkToTranslates: FormTranslation['setChunkToTranslates'];
 }) => {
   return (
     <div className='vertical-stepper relative bg-grey-100 p-2'>
