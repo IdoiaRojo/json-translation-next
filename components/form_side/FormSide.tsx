@@ -1,17 +1,21 @@
 import {translateJSON} from '@/helpers/translateJson';
 import {ChunkToTranslate} from '@/types/ChunkToTranslate';
 import {FileType, FormTranslation} from '@/types/FormTranslation';
-import {LanguagesAvailable, languageNames} from '@/types/LanguagesAvailable';
+import {
+  LANGUAGES_AVAILABLE,
+  LanguagesAvailable,
+  languageNames,
+} from '@/types/LanguagesAvailable';
 import {Translation} from '@/types/Translation';
-import {ArrowRight} from '@phosphor-icons/react';
 import {Mode} from 'fs';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import toast from 'react-hot-toast';
 import {translateCSV} from '../../helpers/translateCSV';
 import Button from '../Button';
 import {ChunkVerticalStepper} from '../ChunkVerticalStepper';
 import {Header} from '../Header';
 import {ProgressBar} from '../ProgressBar';
+import {ChipCustom} from './Chip';
 import {LanguageSelect} from './LanguageSelect';
 
 interface FileUploaded {
@@ -33,39 +37,13 @@ export const FormSide = ({
 }) => {
   const [mode, setMode] = useState<Mode>('translate');
 
-  const [inputLanguage, setInputLanguage] = useState<LanguagesAvailable>('es');
-  const [outputLanguage, setOutputLanguage] =
-    useState<LanguagesAvailable>('en');
+  const [inputLanguage, setInputLanguage] = useState<LanguagesAvailable>('en');
+  const [outputLanguages, setOutputLanguages] = useState<string[]>(['fr']);
   const [jsonFile, setJsonFile] = useState<FileUploaded | null>(null);
   const [jsonData, setJsonData] = useState<Translation | null>(null);
   const [translationChunks, setChunkToTranslates] = useState<
     ChunkToTranslate[]
   >([]);
-
-  // const handleCsvFileChange = (file: File) => {
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       const csvContent = e.target.result as string;
-
-  //       const lines = csvContent.split('\n');
-  //       const translations = lines.map((line) => line.trim());
-
-  //       translateCSV({
-  //         translations,
-  //         setJsonData,
-  //         setTranslation,
-  //         setChunkToTranslates,
-  //         setTranslationStatus,
-  //         inputLanguage,
-  //         outputLanguage,
-  //         mode,
-  //       });
-  //     };
-
-  //     reader.readAsText(file);
-  //   }
-  // };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -90,7 +68,10 @@ export const FormSide = ({
   };
 
   const handleTranslateJson = () => {
-    if (!jsonFile || inputLanguage === outputLanguage) {
+    if (
+      !jsonFile
+      // || inputLanguage === outputLanguage
+    ) {
       toast.error(
         !jsonFile
           ? 'You must upload a file to translate'
@@ -99,7 +80,6 @@ export const FormSide = ({
       return null;
     }
     if (jsonFile.extension === 'csv') {
-      // handleCsvFileChange(jsonFile.file);
       translateCSV({
         file: jsonFile,
         setJsonData,
@@ -107,7 +87,7 @@ export const FormSide = ({
         setChunkToTranslates,
         setTranslationStatus,
         inputLanguage,
-        outputLanguage,
+        outputLanguages,
         mode,
       });
     } else {
@@ -118,7 +98,7 @@ export const FormSide = ({
         setChunkToTranslates,
         setTranslationStatus,
         inputLanguage,
-        outputLanguage,
+        outputLanguage: outputLanguages[0],
         mode,
       });
     }
@@ -133,6 +113,23 @@ export const FormSide = ({
     setFileType(target.value as FileType);
   };
 
+  useEffect(() => {
+    const updatedOutputLanguages = outputLanguages.filter(
+      (lang) => lang !== inputLanguage
+    );
+    if (updatedOutputLanguages.length === 0)
+      updatedOutputLanguages.push(availableLanguagesForTranslation[0]);
+
+    setOutputLanguages(updatedOutputLanguages);
+  }, [inputLanguage]);
+
+  const handleSelectChange = (field: string, value: unknown) => {
+    setOutputLanguages(value as string[]);
+  };
+
+  const availableLanguagesForTranslation = LANGUAGES_AVAILABLE.filter(
+    (language) => language !== inputLanguage
+  );
   return (
     <>
       <Header>
@@ -155,24 +152,31 @@ export const FormSide = ({
               accept='.json, .csv'
             />
           </div>
-          <div className='my-10 flex items-center justify-between'>
-            <div className='flex items-center'>
+          <div className='my-10'>
+            <div className=''>
+              <label>From</label>
               <LanguageSelect
                 selectedLanguage={inputLanguage}
                 onLanguageChange={setInputLanguage}
-                label='From'
               />
-              <span className='mx-2'>
-                <ArrowRight />
-              </span>
-              <LanguageSelect
-                selectedLanguage={outputLanguage}
-                onLanguageChange={setOutputLanguage}
-              />
+              <label>To</label>
+              {fileType === 'csv' ? (
+                <ChipCustom
+                  valueAct={outputLanguages}
+                  values={availableLanguagesForTranslation}
+                  handleFieldChange={handleSelectChange}
+                />
+              ) : (
+                <div></div>
+                // <LanguageSelect
+                //   selectedLanguage={outputLanguage}
+                //   onLanguageChange={setOutputLanguage}
+                // />
+              )}
             </div>
             <Button
               onClick={handleTranslateJson}
-              className={`${fileType === 'csv' ? 'ml-4' : ''}`}
+              className={`${fileType === 'csv' ? 'mt-4' : ''}`}
             >
               Translate
             </Button>
@@ -192,7 +196,7 @@ export const FormSide = ({
                   translationChunks={translationChunks}
                   jsonData={jsonData}
                   inputLanguage={inputLanguage}
-                  outputLanguage={outputLanguage}
+                  outputLanguage={outputLanguages[0]}
                   mode={mode}
                   setTranslation={setTranslation}
                   setChunkToTranslates={setChunkToTranslates}

@@ -1,4 +1,4 @@
-/* export const apiCall = async ({
+export const apiCall = async ({
   text,
   inputLanguage,
   outputLanguage,
@@ -41,10 +41,9 @@
     console.error('An error occurred while making the API request:', error);
     return null;
   }
+};
 
-}; */
-
-export const apiCall = async ({
+/* export const apiCall = async ({
   text,
   inputLanguage,
   outputLanguage,
@@ -65,7 +64,7 @@ export const apiCall = async ({
         resolve(null);
       } else {
         // Devuelve una respuesta simulada después de 2 segundos
-        /*resolve({
+        resolve({
           image_text: 'We take care of your well-being',
           login: {
             email_verified: '',
@@ -82,11 +81,11 @@ export const apiCall = async ({
             wrong_credentials:
               'Invalid email or password. For safety reasons, after 10 failed attempts your account will be locked for 60 minutes.',
           },
-        });*/
+        });
         resolve({
           data: ['blabla', 'je suis seulemente', 'translation'],
         });
       }
     }, 2000); // Simula una respuesta después de 2 segundos
   });
-};
+}; */

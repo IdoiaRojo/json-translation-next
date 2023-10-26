@@ -1,7 +1,7 @@
 import {ChunkToTranslate} from '@/types/ChunkToTranslate';
 import {FormTranslation} from '@/types/FormTranslation';
 import {apiCall} from './apiCall';
-const LANGUAGES_AVAILABLE = ['es', 'fr', 'it'];
+
 export const translateCSV = async ({
   file,
   setJsonData,
@@ -9,7 +9,7 @@ export const translateCSV = async ({
   setChunkToTranslates,
   setTranslationStatus,
   inputLanguage,
-  outputLanguage,
+  outputLanguages,
   mode,
 }) => {
   const reader = new FileReader();
@@ -20,8 +20,8 @@ export const translateCSV = async ({
         const lines = csvContent.split('\n');
         const translations = lines.map((line) => line.trim());
 
-        setTranslation(null);
-        const initialChunks: ChunkToTranslate[] = LANGUAGES_AVAILABLE.map(
+        setTranslation({[inputLanguage]: translations});
+        const initialChunks: ChunkToTranslate[] = outputLanguages.map(
           (key) => ({
             key,
             status: 'pending',
@@ -29,17 +29,17 @@ export const translateCSV = async ({
         );
         setChunkToTranslates(initialChunks);
         setTranslationStatus('loading');
-        for (const chunk of LANGUAGES_AVAILABLE) {
-          await translateChunk({
-            chunk,
-            data: translations,
-            inputLanguage,
-            outputLanguage,
-            mode,
-            setTranslation,
-            setChunkToTranslates,
-          });
-        }
+        // for (const lang of outputLanguages) {
+        //   await translateChunk({
+        //     chunk: lang,
+        //     data: translations,
+        //     inputLanguage,
+        //     outputLanguage: lang,
+        //     mode,
+        //     setTranslation,
+        //     setChunkToTranslates,
+        //   });
+        // }
 
         setTranslationStatus('finished');
       } catch (error) {
