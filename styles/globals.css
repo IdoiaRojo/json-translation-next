@@ -9,3 +9,6 @@ html {
     'Helvetica Neue', 'Ubuntu';
   font-size: 14px;
 }
+select:focus {
+  outline: none;
+}

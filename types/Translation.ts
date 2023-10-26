@@ -1,3 +1,7 @@
 export interface Translation {
-  [key: string]: any;
+  [key: string]:
+    | {
+        [key: string]: any;
+      }
+    | string;
 }

@@ -1,10 +1,9 @@
 import {ChunkToTranslate} from '@/types/ChunkToTranslate';
 import {FormTranslation} from '@/types/FormTranslation';
-import {Translation} from '@/types/Translation';
 import {apiCall} from './apiCall';
-
-export const translateJSON = async ({
-  jsonFile,
+const LANGUAGES_AVAILABLE = ['es', 'fr', 'it'];
+export const translateCSV = async ({
+  file,
   setJsonData,
   setTranslation,
   setChunkToTranslates,
@@ -14,15 +13,15 @@ export const translateJSON = async ({
   mode,
 }) => {
   const reader = new FileReader();
-
   reader.onload = async (event) => {
     if (event.target) {
-      const fileContent = event.target.result as string;
+      const csvContent = event.target.result as string;
       try {
-        const jsonData: Translation = JSON.parse(fileContent);
-        setJsonData(jsonData);
+        const lines = csvContent.split('\n');
+        const translations = lines.map((line) => line.trim());
+
         setTranslation(null);
-        const initialChunks: ChunkToTranslate[] = Object.keys(jsonData).map(
+        const initialChunks: ChunkToTranslate[] = LANGUAGES_AVAILABLE.map(
           (key) => ({
             key,
             status: 'pending',
@@ -30,11 +29,10 @@ export const translateJSON = async ({
         );
         setChunkToTranslates(initialChunks);
         setTranslationStatus('loading');
-
-        for (const chunk of initialChunks) {
+        for (const chunk of LANGUAGES_AVAILABLE) {
           await translateChunk({
             chunk,
-            jsonData,
+            data: translations,
             inputLanguage,
             outputLanguage,
             mode,
@@ -50,55 +48,54 @@ export const translateJSON = async ({
     }
   };
 
-  reader.readAsText(jsonFile.file);
+  reader.readAsText(file.file);
 };
 
 export const translateChunk = async ({
   chunk,
-  jsonData,
+  data,
   inputLanguage,
   outputLanguage,
   mode,
   setTranslation,
   setChunkToTranslates,
 }: {
-  chunk: ChunkToTranslate;
-  jsonData: FormTranslation['jsonData'];
+  chunk: string;
+  data: string[];
   inputLanguage: FormTranslation['inputLanguage'];
   outputLanguage: FormTranslation['outputLanguage'];
   mode: FormTranslation['mode'];
   setTranslation: FormTranslation['setTranslation'];
   setChunkToTranslates: FormTranslation['setChunkToTranslates'];
 }) => {
-  const key = chunk.key;
+  const key = chunk;
   const startTime = Date.now();
-  console.log(chunk, key);
   updateChunkStatus({key, status: 'loading', setChunkToTranslates});
   try {
     const translation = await apiCall({
-      text: JSON.stringify(jsonData[key]),
+      text: JSON.stringify(data),
       inputLanguage,
-      outputLanguage,
+      outputLanguage: chunk,
       mode,
     });
+
     const time = Date.now() - startTime;
     if (translation) {
       setTranslation((prevTranslations) => {
-        const newTranslation = {...prevTranslations, [key]: translation};
-        const sortedTranslations = Object.keys(newTranslation)
-          .sort()
-          .reduce((acc, curr) => {
-            acc[curr] = prevTranslations[curr];
-            return acc;
-          }, {});
-
-        return {
-          ...sortedTranslations,
-          [key]: translation,
-        };
+        const newTranslation = prevTranslations
+          ? {
+              ...(prevTranslations as object),
+              [key]: translation.data,
+            }
+          : {[key]: translation.data};
+        return newTranslation;
       });
-
-      updateChunkStatus({key, status: 'completed', setChunkToTranslates, time});
+      updateChunkStatus({
+        key,
+        status: 'completed',
+        setChunkToTranslates,
+        time,
+      });
     } else {
       updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
     }
