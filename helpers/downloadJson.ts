@@ -1,12 +1,8 @@
 import {FileType} from '@/types/FormTranslation';
-import {Translation} from '@/types/Translation';
 
-export const downloadTranslatedFile = (
-  translation: Translation,
-  fileType: FileType
-) => {
+export const downloadTranslatedFile = (data: any, fileType: FileType) => {
   if (fileType === 'json') {
-    const translatedBlob = new Blob([JSON.stringify(translation)], {
+    const translatedBlob = new Blob([JSON.stringify(data)], {
       type: 'application/json',
     });
     const url = URL.createObjectURL(translatedBlob);
@@ -20,26 +16,29 @@ export const downloadTranslatedFile = (
 
     URL.revokeObjectURL(url);
   } else {
-    console.log('translation', translation);
-    const csvContent = [];
-    const languages = Object.keys(translation);
-    const keys = Object.keys(translation[languages[0]]);
+    const languages = Object.keys(data);
+    const keys = data[languages[0]].map((_, index) => index);
 
-    // Agregar las cabeceras de idioma al archivo CSV
+    const csvContent = [];
     csvContent.push(['Key', ...languages]);
 
-    // Agregar las filas de traducción al archivo CSV
     keys.forEach((key) => {
       const row = [key];
       languages.forEach((language) => {
-        // Escapar las comas en las traducciones con comillas dobles
-        const data = translation[language][key].replace(/"/g, '""');
-        row.push(`"${data}"`);
+        const text = data[language][key];
+        if (text !== undefined) {
+          const escapedText = text.replace(/"/g, '""');
+          const cellValue = text.includes(',')
+            ? `"${escapedText}"`
+            : escapedText;
+          row.push(cellValue);
+        } else {
+          row.push('');
+        }
       });
       csvContent.push(row);
     });
 
-    // Crear un enlace temporal para descargar el archivo CSV
     const csv = csvContent.map((row) => row.join(',')).join('\n');
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
@@ -51,7 +50,6 @@ export const downloadTranslatedFile = (
     document.body.appendChild(a);
     a.click();
 
-    // Liberar recursos
     URL.revokeObjectURL(url);
     document.body.removeChild(a);
   }

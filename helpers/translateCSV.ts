@@ -19,8 +19,15 @@ export const translateCSV = async ({
       try {
         const lines = csvContent.split('\n');
         const translations = lines.map((line) => line.trim());
-
         setTranslation({[inputLanguage]: translations});
+
+        const chunkSize = 10; // Tamaño máximo del chunk
+        const chunks = [];
+        for (let i = 0; i < translations.length; i += chunkSize) {
+          const chunk = translations.slice(i, i + chunkSize);
+          chunks.push(chunk);
+        }
+
         const initialChunks: ChunkToTranslate[] = outputLanguages.map(
           (key) => ({
             key,
@@ -29,17 +36,20 @@ export const translateCSV = async ({
         );
         setChunkToTranslates(initialChunks);
         setTranslationStatus('loading');
-        // for (const lang of outputLanguages) {
-        //   await translateChunk({
-        //     chunk: lang,
-        //     data: translations,
-        //     inputLanguage,
-        //     outputLanguage: lang,
-        //     mode,
-        //     setTranslation,
-        //     setChunkToTranslates,
-        //   });
-        // }
+
+        for (const lang of outputLanguages) {
+          for (const chunk of chunks) {
+            await translateChunk({
+              chunk: lang,
+              data: chunk,
+              inputLanguage,
+              outputLanguage: lang,
+              mode,
+              setTranslation,
+              setChunkToTranslates,
+            });
+          }
+        }
 
         setTranslationStatus('finished');
       } catch (error) {
@@ -82,14 +92,22 @@ export const translateChunk = async ({
     const time = Date.now() - startTime;
     if (translation) {
       setTranslation((prevTranslations) => {
-        const newTranslation = prevTranslations
-          ? {
-              ...(prevTranslations as object),
-              [key]: translation.data,
-            }
-          : {[key]: translation.data};
+        const newTranslation = {...prevTranslations};
+        console.log('translation.data', translation);
+        console.log('newTranslation', newTranslation);
+
+        if ((prevTranslations as object)[key]) {
+          newTranslation[key] = [
+            ...(prevTranslations as object)[key],
+            ...translation.data,
+          ];
+        } else {
+          newTranslation[key] = [...translation.data];
+        }
+
         return newTranslation;
       });
+
       updateChunkStatus({
         key,
         status: 'completed',

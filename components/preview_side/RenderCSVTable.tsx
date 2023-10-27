@@ -5,16 +5,16 @@ export const RenderCSVTable = ({
 }: {
   translationsData: FormTranslation['translation'];
 }) => {
-  if (!translationsData) return;
-  console.log(translationsData);
+  if (!translationsData) return null;
   const columns = Object.keys(translationsData);
   const keys = Object.keys(translationsData[columns[0]]);
+
   return (
     <table className='mt-10 w-fit text-left'>
       <thead>
         <tr>
           {columns.map((column) => (
-            <th key={column} className='p-2 border border-gray-300'>
+            <th key={column} className='p-1 border border-gray-300'>
               {column}
             </th>
           ))}
@@ -24,8 +24,10 @@ export const RenderCSVTable = ({
         {keys.map((key) => (
           <tr key={key}>
             {columns.map((column) => (
-              <td key={column} className='p-2 border border-gray-300'>
-                {translationsData[column][key]}
+              <td key={column} className='p-1 border border-gray-300'>
+                <span className='writing-animation inline-block'>
+                  {translationsData[column][key]}
+                </span>
               </td>
             ))}
           </tr>
