@@ -23,7 +23,7 @@ const Home: NextPage<Props> = () => {
     >
       <div
         className={`${
-          fileType === 'csv' ? 'w-full h-1/2 flex-1' : 'w-1/2 h-screen'
+          fileType === 'csv' ? 'w-full' : 'w-1/2 h-screen'
         } overflow-y-auto p-10`}
       >
         <FormSide
@@ -36,7 +36,7 @@ const Home: NextPage<Props> = () => {
       </div>
       <div
         className={`${
-          fileType === 'csv' ? 'w-full h-1/2 flex-1' : 'w-1/2 h-screen'
+          fileType === 'csv' ? 'w-full flex-1' : 'w-1/2 h-screen'
         } bg-gray-100 p-10 flex flex-col`}
       >
         <PreviewSide

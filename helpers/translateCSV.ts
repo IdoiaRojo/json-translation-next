@@ -38,17 +38,43 @@ export const translateCSV = async ({
         setTranslationStatus('loading');
 
         for (const lang of outputLanguages) {
+          const startTime = Date.now();
+          let stopLoop = false;
+          updateChunkStatus({
+            key: lang,
+            status: 'loading',
+            setChunkToTranslates,
+          });
           for (const chunk of chunks) {
-            await translateChunk({
-              chunk: lang,
+            const result = await translateChunk({
+              lang,
               data: chunk,
               inputLanguage,
-              outputLanguage: lang,
               mode,
               setTranslation,
-              setChunkToTranslates,
             });
+
+            if (!result) {
+              updateChunkStatus({
+                key: lang,
+                status: 'error',
+                setChunkToTranslates,
+                time: Date.now() - startTime,
+              });
+              stopLoop = true; // Establece la variable de control para detener el bucle
+              break; // Sale del bucle
+            }
           }
+
+          if (stopLoop) {
+            break; // Sale del bucle externo si la variable de control está establecida
+          }
+          updateChunkStatus({
+            key: lang,
+            status: 'completed',
+            setChunkToTranslates,
+            time: Date.now() - startTime,
+          });
         }
 
         setTranslationStatus('finished');
@@ -62,65 +88,50 @@ export const translateCSV = async ({
 };
 
 export const translateChunk = async ({
-  chunk,
+  lang,
   data,
   inputLanguage,
-  outputLanguage,
   mode,
   setTranslation,
-  setChunkToTranslates,
 }: {
-  chunk: string;
+  lang: string;
   data: string[];
   inputLanguage: FormTranslation['inputLanguage'];
-  outputLanguage: FormTranslation['outputLanguage'];
   mode: FormTranslation['mode'];
   setTranslation: FormTranslation['setTranslation'];
-  setChunkToTranslates: FormTranslation['setChunkToTranslates'];
 }) => {
-  const key = chunk;
-  const startTime = Date.now();
-  updateChunkStatus({key, status: 'loading', setChunkToTranslates});
   try {
     const translation = await apiCall({
       text: JSON.stringify(data),
       inputLanguage,
-      outputLanguage: chunk,
+      outputLanguage: lang,
       mode,
     });
 
-    const time = Date.now() - startTime;
     if (translation) {
       setTranslation((prevTranslations) => {
         const newTranslation = {...prevTranslations};
-        console.log('translation.data', translation);
-        console.log('newTranslation', newTranslation);
-
-        if ((prevTranslations as object)[key]) {
-          newTranslation[key] = [
-            ...(prevTranslations as object)[key],
+        if ((prevTranslations as object)[lang]) {
+          newTranslation[lang] = [
+            ...(prevTranslations as object)[lang],
             ...translation.data,
           ];
         } else {
-          newTranslation[key] = [...translation.data];
+          newTranslation[lang] = [...translation.data];
         }
 
         return newTranslation;
       });
-
-      updateChunkStatus({
-        key,
-        status: 'completed',
-        setChunkToTranslates,
-        time,
-      });
+      return 'epaaa';
     } else {
-      updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
+      return null;
+      // updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
     }
   } catch (error) {
-    const time = Date.now() - startTime;
+    // const time = Date.now() - startTime;
     console.error('Error al traducir el chunk:', error);
-    updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
+    return null;
+    // updateChunkStatus({key, status: 'error', setChunkToTranslates, time});
   }
 };
 
