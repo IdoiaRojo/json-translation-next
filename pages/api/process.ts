@@ -75,6 +75,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (
+    !req.body.openAIKey ||
     !req.body.text ||
     !req.body.inputLanguage ||
     !req.body.outputLanguage ||
@@ -84,13 +85,14 @@ export default async function handler(
     return;
   }
 
-  if (!Boolean(process.env.OPENAI_KEY) && !req.body.key) {
+  if (!Boolean(process.env.OPENAI_KEY) && !req.body.openAIKey) {
     res.status(400).json({error: 'Please provide an OpenAI API key'});
     return;
   }
 
   const configuration = new Configuration({
-    apiKey: req.body.key ? req.body.key : process.env.OPENAI_KEY,
+    // apiKey: req.body.key ? req.body.key : process.env.OPENAI_KEY,
+    apiKey: req.body.openAIKey,
   });
 
   const openai = new OpenAIApi(configuration);

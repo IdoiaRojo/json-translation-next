@@ -37,6 +37,7 @@ export const FormSide = ({
 }) => {
   const [mode, setMode] = useState<Mode>('translate');
 
+  const [openAIKey, setOpenAIKey] = useState<string | null>(null);
   const [inputLanguage, setInputLanguage] = useState<LanguagesAvailable>('en');
   const [outputLanguages, setOutputLanguages] = useState<string[]>(['fr']);
   const [jsonFile, setJsonFile] = useState<FileUploaded | null>(null);
@@ -89,6 +90,7 @@ export const FormSide = ({
         inputLanguage,
         outputLanguages,
         mode,
+        openAIKey,
       });
     } else {
       translateJSON({
@@ -145,14 +147,14 @@ export const FormSide = ({
       </Header>
       <div className='flex flex-row'>
         <div>
-          <div className='my-10 flex items-center'>
+          <div className='mt-10 flex items-center'>
             <input
               type='file'
               onChange={handleFileChange}
               accept='.json, .csv'
             />
           </div>
-          <div className='my-10'>
+          <div>
             <div className=''>
               <label>From</label>
               <LanguageSelect
@@ -173,6 +175,15 @@ export const FormSide = ({
                 //   onLanguageChange={setOutputLanguage}
                 // />
               )}
+              <label>Enter OpenAI Key</label>
+              <input
+                type='text'
+                name='key'
+                required={true}
+                className='border border-grey-400 rounded-md px-1 py-2 outline-none block w-full'
+                value={openAIKey || ''}
+                onChange={(event) => setOpenAIKey(event.target.value)}
+              />
             </div>
             <Button
               onClick={handleTranslateJson}

@@ -3,11 +3,13 @@ export const apiCall = async ({
   inputLanguage,
   outputLanguage,
   mode,
+  openAIKey,
 }: {
   text: string;
   inputLanguage;
   outputLanguage;
   mode;
+  openAIKey: string;
 }): Promise<any> => {
   try {
     const response = await fetch('/api/process', {
@@ -20,6 +22,7 @@ export const apiCall = async ({
         inputLanguage,
         outputLanguage,
         mode,
+        openAIKey,
       }),
     });
 

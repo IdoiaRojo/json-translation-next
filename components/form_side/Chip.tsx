@@ -4,7 +4,7 @@ export const ChipCustom = ({valueAct, values, handleFieldChange}) => {
   return (
     <Select
       labelId='language-select'
-      className={'h-auto w-full bg-white p-2'}
+      className='h-12 w-full bg-white p-2'
       multiple
       value={valueAct}
       onChange={(e) => {

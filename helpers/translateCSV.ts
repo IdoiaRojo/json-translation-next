@@ -11,6 +11,7 @@ export const translateCSV = async ({
   inputLanguage,
   outputLanguages,
   mode,
+  openAIKey,
 }) => {
   const reader = new FileReader();
   reader.onload = async (event) => {
@@ -52,6 +53,7 @@ export const translateCSV = async ({
               inputLanguage,
               mode,
               setTranslation,
+              openAIKey,
             });
 
             if (!result) {
@@ -93,12 +95,14 @@ export const translateChunk = async ({
   inputLanguage,
   mode,
   setTranslation,
+  openAIKey,
 }: {
   lang: string;
   data: string[];
   inputLanguage: FormTranslation['inputLanguage'];
   mode: FormTranslation['mode'];
   setTranslation: FormTranslation['setTranslation'];
+  openAIKey: string;
 }) => {
   try {
     const translation = await apiCall({
@@ -106,6 +110,7 @@ export const translateChunk = async ({
       inputLanguage,
       outputLanguage: lang,
       mode,
+      openAIKey,
     });
 
     if (translation) {
