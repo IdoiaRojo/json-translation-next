@@ -102,6 +102,7 @@ export const FormSide = ({
         inputLanguage,
         outputLanguage: outputLanguages[0],
         mode,
+        openAIKey,
       });
     }
   };
@@ -211,6 +212,7 @@ export const FormSide = ({
                   mode={mode}
                   setTranslation={setTranslation}
                   setChunkToTranslates={setChunkToTranslates}
+                  openAIKey={openAIKey}
                 />
               </>
             )}

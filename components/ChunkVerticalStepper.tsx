@@ -13,6 +13,7 @@ export const ChunkVerticalStepper = ({
   mode,
   setTranslation,
   setChunkToTranslates,
+  openAIKey,
 }: {
   translationChunks: ChunkToTranslate[];
   jsonData: FormTranslation['jsonData'];
@@ -21,6 +22,7 @@ export const ChunkVerticalStepper = ({
   mode: FormTranslation['mode'];
   setTranslation: FormTranslation['setTranslation'];
   setChunkToTranslates: FormTranslation['setChunkToTranslates'];
+  openAIKey: string;
 }) => {
   return (
     <div className='vertical-stepper relative bg-grey-100 p-2'>
@@ -58,6 +60,7 @@ export const ChunkVerticalStepper = ({
                     mode,
                     setTranslation,
                     setChunkToTranslates,
+                    openAIKey,
                   })
                 }
               >
