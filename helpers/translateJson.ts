@@ -12,6 +12,7 @@ export const translateJSON = async ({
   inputLanguage,
   outputLanguage,
   mode,
+  openAIKey,
 }) => {
   const reader = new FileReader();
 
@@ -40,6 +41,7 @@ export const translateJSON = async ({
             mode,
             setTranslation,
             setChunkToTranslates,
+            openAIKey,
           });
         }
 
@@ -61,6 +63,7 @@ export const translateChunk = async ({
   mode,
   setTranslation,
   setChunkToTranslates,
+  openAIKey,
 }: {
   chunk: ChunkToTranslate;
   jsonData: FormTranslation['jsonData'];
@@ -69,10 +72,10 @@ export const translateChunk = async ({
   mode: FormTranslation['mode'];
   setTranslation: FormTranslation['setTranslation'];
   setChunkToTranslates: FormTranslation['setChunkToTranslates'];
+  openAIKey: string;
 }) => {
   const key = chunk.key;
   const startTime = Date.now();
-  console.log(chunk, key);
   updateChunkStatus({key, status: 'loading', setChunkToTranslates});
   try {
     const translation = await apiCall({
@@ -80,6 +83,7 @@ export const translateChunk = async ({
       inputLanguage,
       outputLanguage,
       mode,
+      openAIKey,
     });
     const time = Date.now() - startTime;
     if (translation) {
