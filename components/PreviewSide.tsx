@@ -1,8 +1,8 @@
+import Button from '@/components/Button';
+import {Header} from '@/components/Header';
+import {RenderCSVTable} from '@/components/preview_side/RenderCSVTable';
+import {downloadTranslatedFile} from '@/helpers/downloadJson';
 import {FormTranslation} from '@/types/FormTranslation';
-import {downloadTranslatedFile} from '../../helpers/downloadJson';
-import Button from '../Button';
-import {Header} from '../Header';
-import {RenderCSVTable} from './RenderCSVTable';
 
 export const PreviewSide = ({
   translation,

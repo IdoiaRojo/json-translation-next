@@ -1,22 +1,23 @@
+import Button from '@/components/Button';
+import {Header} from '@/components/Header';
+import {ProgressBar} from '@/components/ProgressBar';
+import {ChipCustom} from '@/components/form_side/Chip';
+import {InputContainer} from '@/components/form_side/InputContainer';
+import {LanguageSelect} from '@/components/form_side/LanguageSelect';
+import {translateCSV} from '@/helpers/translateCSV';
 import {translateJSON} from '@/helpers/translateJson';
-import {ChunkToTranslate} from '@/types/ChunkToTranslate';
 import {FileType, FormTranslation} from '@/types/FormTranslation';
+import {LanguageChunk} from '@/types/LanguageChunk';
+import {LanguageObject} from '@/types/LanguageObject';
 import {
   LANGUAGES_AVAILABLE,
   LanguagesAvailable,
   languageNames,
 } from '@/types/LanguagesAvailable';
-import {Translation} from '@/types/Translation';
 import {Mode} from 'fs';
 import {useEffect, useState} from 'react';
 import toast from 'react-hot-toast';
-import {translateCSV} from '../../helpers/translateCSV';
-import Button from '../Button';
-import {ChunkVerticalStepper} from '../ChunkVerticalStepper';
-import {Header} from '../Header';
-import {ProgressBar} from '../ProgressBar';
-import {ChipCustom} from './Chip';
-import {LanguageSelect} from './LanguageSelect';
+import {LanguagesVerticalStepper} from './LanguagesVerticalStepper';
 
 interface FileUploaded {
   file: File;
@@ -40,11 +41,9 @@ export const FormSide = ({
   const [openAIKey, setOpenAIKey] = useState<string | null>(null);
   const [inputLanguage, setInputLanguage] = useState<LanguagesAvailable>('en');
   const [outputLanguages, setOutputLanguages] = useState<string[]>(['fr']);
-  const [jsonFile, setJsonFile] = useState<FileUploaded | null>(null);
-  const [jsonData, setJsonData] = useState<Translation | null>(null);
-  const [translationChunks, setChunkToTranslates] = useState<
-    ChunkToTranslate[]
-  >([]);
+  const [file, setFile] = useState<FileUploaded | null>(null);
+  const [fileChunks, setFileChunks] = useState<LanguageChunk[] | null>(null);
+  const [languagesObject, setLanguagesObjects] = useState<LanguageObject[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -59,7 +58,7 @@ export const FormSide = ({
           `${languageNames[fileName]} automatically detected as file language`
         );
       }
-      setJsonFile({
+      setFile({
         file,
         extension: fileExtension,
       });
@@ -69,23 +68,20 @@ export const FormSide = ({
   };
 
   const handleTranslateJson = () => {
-    if (
-      !jsonFile
-      // || inputLanguage === outputLanguage
-    ) {
+    if (!file || !openAIKey) {
       toast.error(
-        !jsonFile
+        !file
           ? 'You must upload a file to translate'
-          : 'Input and output language cannot be the same'
+          : 'You must upload a file to translate'
       );
       return null;
     }
-    if (jsonFile.extension === 'csv') {
+    if (file.extension === 'csv') {
       translateCSV({
-        file: jsonFile,
-        setJsonData,
+        file,
+        setFileChunks,
         setTranslation,
-        setChunkToTranslates,
+        setLanguagesObjects,
         setTranslationStatus,
         inputLanguage,
         outputLanguages,
@@ -94,10 +90,10 @@ export const FormSide = ({
       });
     } else {
       translateJSON({
-        jsonFile,
-        setJsonData,
+        file,
+        setFileChunks,
         setTranslation,
-        setChunkToTranslates,
+        setLanguagesObjects,
         setTranslationStatus,
         inputLanguage,
         outputLanguage: outputLanguages[0],
@@ -108,8 +104,8 @@ export const FormSide = ({
   };
 
   const progressPercentage =
-    (translationChunks.filter((chunk) => chunk.status === 'completed').length /
-      translationChunks.length) *
+    (languagesObject.filter((chunk) => chunk.status === 'completed').length /
+      languagesObject.length) *
     100;
 
   const handleChange = ({target}: React.ChangeEvent<HTMLSelectElement>) => {
@@ -148,51 +144,55 @@ export const FormSide = ({
       </Header>
       <div className='flex flex-row'>
         <div>
-          <div className='mt-10 flex items-center'>
-            <input
-              type='file'
-              onChange={handleFileChange}
-              accept='.json, .csv'
-            />
-          </div>
-          <div>
-            <div className=''>
-              <label>From</label>
-              <LanguageSelect
-                selectedLanguage={inputLanguage}
-                onLanguageChange={setInputLanguage}
-              />
-              <label>To</label>
-              {fileType === 'csv' ? (
-                <ChipCustom
-                  valueAct={outputLanguages}
-                  values={availableLanguagesForTranslation}
-                  handleFieldChange={handleSelectChange}
-                />
-              ) : (
-                <div></div>
-                // <LanguageSelect
-                //   selectedLanguage={outputLanguage}
-                //   onLanguageChange={setOutputLanguage}
-                // />
-              )}
-              <label>Enter OpenAI Key</label>
+          <InputContainer>
+            <div className='flex items-center'>
               <input
-                type='text'
-                name='key'
-                required={true}
-                className='border border-grey-400 rounded-md px-1 py-2 outline-none block w-full'
-                value={openAIKey || ''}
-                onChange={(event) => setOpenAIKey(event.target.value)}
+                type='file'
+                onChange={handleFileChange}
+                accept='.json, .csv'
               />
             </div>
-            <Button
-              onClick={handleTranslateJson}
-              className={`${fileType === 'csv' ? 'mt-4' : ''}`}
-            >
-              Translate
-            </Button>
-          </div>
+          </InputContainer>
+          <InputContainer>
+            <label>From</label>
+            <LanguageSelect
+              selectedLanguage={inputLanguage}
+              onLanguageChange={setInputLanguage}
+            />
+          </InputContainer>
+          <InputContainer>
+            <label>To</label>
+            {fileType === 'csv' ? (
+              <ChipCustom
+                valueAct={outputLanguages}
+                values={availableLanguagesForTranslation}
+                handleFieldChange={handleSelectChange}
+              />
+            ) : (
+              <div></div>
+              // <LanguageSelect
+              //   selectedLanguage={outputLanguage}
+              //   onLanguageChange={setOutputLanguage}
+              // />
+            )}
+          </InputContainer>
+          <InputContainer>
+            <label>Enter OpenAI Key</label>
+            <input
+              type='text'
+              name='key'
+              required={true}
+              className='border border-grey-400 rounded-md px-1 py-2 outline-none block w-full'
+              value={openAIKey || ''}
+              onChange={(event) => setOpenAIKey(event.target.value)}
+            />
+          </InputContainer>
+          <Button
+            onClick={handleTranslateJson}
+            className={`${fileType === 'csv' ? 'mt-4' : ''}`}
+          >
+            Translate
+          </Button>
         </div>
         <div className={`${fileType === 'csv' ? 'mx-10' : 'my-10'} flex-1`}>
           {translationStatus === 'loading' && (
@@ -201,18 +201,17 @@ export const FormSide = ({
             </p>
           )}
           <div className='my-4'>
-            {translationChunks.length > 0 && (
+            {languagesObject.length > 0 && (
               <>
                 <ProgressBar progressPercentage={progressPercentage} />
-                <ChunkVerticalStepper
-                  translationChunks={translationChunks}
-                  jsonData={jsonData}
+                <LanguagesVerticalStepper
+                  languagesObject={languagesObject}
+                  fileChunks={fileChunks}
                   inputLanguage={inputLanguage}
-                  outputLanguage={outputLanguages[0]}
                   mode={mode}
                   setTranslation={setTranslation}
-                  setChunkToTranslates={setChunkToTranslates}
                   openAIKey={openAIKey}
+                  setLanguagesObjects={setLanguagesObjects}
                 />
               </>
             )}

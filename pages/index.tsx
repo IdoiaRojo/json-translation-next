@@ -1,5 +1,5 @@
-import {FormSide} from '@/components/form_side/FormSide';
-import {PreviewSide} from '@/components/preview_side/PreviewSide';
+import {FormSide} from '@/components/FormSide';
+import {PreviewSide} from '@/components/PreviewSide';
 import {FileType, FormTranslation} from '@/types/FormTranslation';
 import {TranslationStatus} from '@/types/TranslationStatus';
 import {NextPage} from 'next';

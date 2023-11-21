@@ -1,7 +1,7 @@
 import {CheckCircle, VinylRecord, WarningCircle} from '@phosphor-icons/react';
-import {ChunkToTranslate} from '../../types/ChunkToTranslate';
+import {LanguageObject} from '../../types/LanguageObject';
 
-export const StepIcon = ({chunkStatus}: {chunkStatus: ChunkToTranslate}) => {
+export const StepIcon = ({chunkStatus}: {chunkStatus: LanguageObject}) => {
   return (
     <div
       className={`mr-2 w-[18px] flex items-center justify-center ${

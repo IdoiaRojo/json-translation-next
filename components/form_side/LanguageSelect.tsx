@@ -21,7 +21,11 @@ export const LanguageSelect = ({
   return (
     <div className='border border-grey-200 rounded-md px-1 py-2'>
       <label>{label}</label>
-      <select value={selectedLanguage} onChange={handleLanguageChange}>
+      <select
+        value={selectedLanguage}
+        onChange={handleLanguageChange}
+        className='w-full cursor-pointer'
+      >
         {LANGUAGES_AVAILABLE.map((lang) => (
           <option key={lang} value={lang}>
             {languageNames[lang]}

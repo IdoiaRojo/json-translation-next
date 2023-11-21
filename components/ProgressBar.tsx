@@ -4,7 +4,7 @@ export const ProgressBar = ({
   progressPercentage: number;
 }) => {
   return (
-    <div className='flex items-center justify-center my-4'>
+    <div className='flex items-center justify-center my-4 w-full'>
       <div
         style={{
           width: '100%',
@@ -18,7 +18,7 @@ export const ProgressBar = ({
           style={{
             width: `${progressPercentage}%`,
             height: '100%',
-            backgroundColor: '#36b27e',
+            backgroundColor: progressPercentage === 100 ? '#36b27e' : 'orange',
             borderRadius: '6px',
           }}
         ></div>
