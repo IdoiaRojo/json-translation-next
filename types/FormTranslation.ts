@@ -8,6 +8,7 @@ import {TranslationStatus} from './TranslationStatus';
 export type FileType = 'json' | 'csv';
 export interface FormTranslation {
   languagesObject: LanguageObject[];
+  outputLanguages: string[];
   inputLanguage: LanguagesAvailable;
   fileChunks: LanguageChunk[] | null;
   file;
@@ -21,4 +22,6 @@ export interface FormTranslation {
   setTranslationStatus: React.Dispatch<SetStateAction<TranslationStatus>>;
   translationStatus: TranslationStatus;
   translation: Translation | null;
+  openAIKey: string;
+  setFileChunks: React.Dispatch<SetStateAction<LanguageChunk[]>>;
 }

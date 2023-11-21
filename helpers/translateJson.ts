@@ -1,7 +1,7 @@
+import {apiCall} from '@/api/apiCall';
 import {FormTranslation} from '@/types/FormTranslation';
 import {LanguageObject} from '@/types/LanguageObject';
 import {Translation} from '@/types/Translation';
-import {apiCall} from './apiCall';
 
 export const translateJSON = async ({
   file,
@@ -35,16 +35,16 @@ export const translateJSON = async ({
         setTranslationStatus('loading');
 
         for (const languageObject of initialLanguagesObjects) {
-          await translateLanguage({
-            languageObject,
-            fileChunks,
-            inputLanguage,
-            outputLanguage,
-            mode,
-            setTranslation,
-            setLanguagesObjects,
-            openAIKey,
-          });
+          // await translateLanguage({
+          //   languageObject,
+          //   fileChunks,
+          //   inputLanguage,
+          //   outputLanguage,
+          //   mode,
+          //   setTranslation,
+          //   setLanguagesObjects,
+          //   openAIKey,
+          // });
         }
 
         setTranslationStatus('finished');

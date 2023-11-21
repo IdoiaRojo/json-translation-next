@@ -4,7 +4,6 @@ import {ProgressBar} from '@/components/ProgressBar';
 import {ChipCustom} from '@/components/form_side/Chip';
 import {InputContainer} from '@/components/form_side/InputContainer';
 import {LanguageSelect} from '@/components/form_side/LanguageSelect';
-import {translateCSV} from '@/helpers/translateCSV';
 import {translateJSON} from '@/helpers/translateJson';
 import {FileType, FormTranslation} from '@/types/FormTranslation';
 import {LanguageChunk} from '@/types/LanguageChunk';
@@ -14,6 +13,7 @@ import {
   LanguagesAvailable,
   languageNames,
 } from '@/types/LanguagesAvailable';
+import {translateCSV} from '@/utils/translateCSV';
 import {Mode} from 'fs';
 import {useEffect, useState} from 'react';
 import toast from 'react-hot-toast';

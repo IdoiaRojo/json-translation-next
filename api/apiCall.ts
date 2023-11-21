@@ -67,7 +67,7 @@ export const apiCall = async ({
       // Genera un número aleatorio entre 0 y 1
       const randomValue = Math.random();
       // Devuelve null aproximadamente el 10% del tiempo (ajusta este valor según tus necesidades)
-      if (returnRandom || randomValue < 0.3) {
+      if (returnRandom && randomValue < 0.3) {
         resolve(null);
       }
 

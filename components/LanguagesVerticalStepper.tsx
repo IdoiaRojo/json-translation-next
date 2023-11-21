@@ -1,9 +1,7 @@
 import {formatTime} from '@/helpers/formatTime';
-import {
-  translateChunk,
-  updateLanguageObjectStatus,
-} from '@/helpers/translateCSV';
 import {FormTranslation} from '@/types/FormTranslation';
+import {translateChunk} from '@/utils/translateChunk';
+import {updateTranslationStatus} from '@/utils/updateTranslationStatus';
 import Button from './Button';
 import {ProgressBar} from './ProgressBar';
 import {StepIcon} from './status/StepIcon';
@@ -26,6 +24,7 @@ export const LanguagesVerticalStepper = ({
   setLanguagesObjects: FormTranslation['setLanguagesObjects'];
 }) => {
   console.log('fileChunks', fileChunks);
+  console.log('languageObject', languagesObject);
   return (
     <div className='vertical-stepper relative bg-grey-100 p-2'>
       {languagesObject.map((languageObject, index) => (
@@ -42,32 +41,34 @@ export const LanguagesVerticalStepper = ({
               {languageObject.key}
             </p>
             <span className='text-[12px] leading-tight'>
-              {languageObject.time
-                ? formatTime(languageObject.time)
-                : languageObject.status === 'loading'
+              {languageObject.status === 'loading'
                 ? 'Translating...'
+                : languageObject.time
+                ? formatTime(languageObject.time)
                 : ''}
             </span>
           </div>
           <div className='w-[50%] mx-4'>
-            <ProgressBar
-              progressPercentage={
-                (languageObject.chunkPosition * 100) /
-                languageObject.chunksCount
-              }
-            />
+            {languageObject.chunkPosition > 0 && (
+              <ProgressBar
+                progressPercentage={
+                  (languageObject.chunkPosition * 100) /
+                  languageObject.chunksCount
+                }
+              />
+            )}
           </div>
           {languageObject.status === 'error' && (
             <>
               <Button
                 size='small'
                 onClick={() => {
-                  updateLanguageObjectStatus({
-                    key: languageObject.key,
-                    status: 'loading',
+                  updateTranslationStatus(
+                    languageObject.key,
+                    'loading',
                     setLanguagesObjects,
-                    position: 0,
-                  });
+                    0
+                  );
                   translateChunk({
                     lang: languageObject.key,
                     data: fileChunks[languageObject.chunkPosition].data,
