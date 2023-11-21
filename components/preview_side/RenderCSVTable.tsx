@@ -10,7 +10,7 @@ export const RenderCSVTable = ({
   const keys = Object.keys(translationsData[columns[0]]);
 
   return (
-    <table className='mt-10 w-fit text-left'>
+    <table className='mt-10 table-auto w-full text-left'>
       <thead>
         <tr>
           {columns.map((column) => (
@@ -24,7 +24,10 @@ export const RenderCSVTable = ({
         {keys.map((key) => (
           <tr key={key}>
             {columns.map((column) => (
-              <td key={column} className='p-1 border border-gray-300'>
+              <td
+                key={column}
+                className='p-1 border border-gray-300 break-words'
+              >
                 <span className='writing-animation inline-block'>
                   {translationsData[column][key]}
                 </span>

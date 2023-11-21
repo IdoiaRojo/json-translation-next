@@ -13,6 +13,7 @@ export const translateCSV = async ({
   outputLanguages,
   mode,
   openAIKey,
+  setLastProcessed,
 }: {
   file: FormTranslation['file'];
   setFileChunks: FormTranslation['setFileChunks'];
@@ -23,6 +24,8 @@ export const translateCSV = async ({
   outputLanguages: FormTranslation['outputLanguages'];
   mode: FormTranslation['mode'];
   openAIKey: FormTranslation['openAIKey'];
+  lastProcessed: FormTranslation['lastProcessed'];
+  setLastProcessed: FormTranslation['setLastProcessed'];
 }) => {
   const csvContent = await readCSVFile(file);
   if (!csvContent) return;
@@ -43,7 +46,8 @@ export const translateCSV = async ({
       setLanguagesObjects,
       inputLanguage,
       mode,
-      openAIKey
+      openAIKey,
+      setLastProcessed
     );
     setTranslationStatus('finished');
   } catch (error) {

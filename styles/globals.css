@@ -25,7 +25,7 @@ select:focus {
 /* Estilo base para el elemento con la animación */
 .writing-animation {
   width: 0;
-  white-space: nowrap; /* Evita que las palabras se rompan en varias líneas */
+
   overflow: hidden;
   animation: typing 4s steps(40, end) forwards; /* Ajusta la duración y pasos de la animación */
 }

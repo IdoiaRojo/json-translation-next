@@ -1,7 +1,6 @@
 import {formatTime} from '@/helpers/formatTime';
+import {retakeProcessingTranslation} from '@/helpers/processTranslations';
 import {FormTranslation} from '@/types/FormTranslation';
-import {translateChunk} from '@/utils/translateChunk';
-import {updateTranslationStatus} from '@/utils/updateTranslationStatus';
 import Button from './Button';
 import {ProgressBar} from './ProgressBar';
 import {StepIcon} from './status/StepIcon';
@@ -14,6 +13,10 @@ export const LanguagesVerticalStepper = ({
   setTranslation,
   openAIKey,
   setLanguagesObjects,
+  setTranslationStatus,
+  outputLanguages,
+  lastProcessed,
+  setLastProcessed,
 }: {
   languagesObject: FormTranslation['languagesObject'];
   fileChunks: FormTranslation['fileChunks'];
@@ -22,9 +25,28 @@ export const LanguagesVerticalStepper = ({
   setTranslation: FormTranslation['setTranslation'];
   openAIKey: string;
   setLanguagesObjects: FormTranslation['setLanguagesObjects'];
+  setTranslationStatus: FormTranslation['setTranslationStatus'];
+  outputLanguages: FormTranslation['outputLanguages'];
+  lastProcessed: FormTranslation['lastProcessed'];
+  setLastProcessed: FormTranslation['setLastProcessed'];
 }) => {
-  console.log('fileChunks', fileChunks);
-  console.log('languageObject', languagesObject);
+  const retakeTranslating = async () => {
+    console.log('retakeTranslating');
+    setTranslationStatus('loading');
+    await retakeProcessingTranslation(
+      fileChunks,
+      outputLanguages,
+      setTranslation,
+      setLanguagesObjects,
+      inputLanguage,
+      mode,
+      openAIKey,
+      lastProcessed,
+      setLastProcessed
+    );
+    setTranslationStatus('finished');
+  };
+  console.log('retakeTranslating', languagesObject);
   return (
     <div className='vertical-stepper relative bg-grey-100 p-2'>
       {languagesObject.map((languageObject, index) => (
@@ -62,24 +84,26 @@ export const LanguagesVerticalStepper = ({
             <>
               <Button
                 size='small'
-                onClick={() => {
-                  updateTranslationStatus(
-                    languageObject.key,
-                    'loading',
-                    setLanguagesObjects,
-                    0
-                  );
-                  translateChunk({
-                    lang: languageObject.key,
-                    data: fileChunks[languageObject.chunkPosition].data,
-                    inputLanguage,
-                    mode,
-                    setTranslation,
-                    openAIKey,
-                    setLanguagesObjects,
-                    chunkPosition: languageObject.chunkPosition,
-                  });
-                }}
+                onClick={
+                  retakeTranslating
+
+                  // updateTranslationStatus(
+                  //   languageObject.key,
+                  //   'loading',
+                  //   setLanguagesObjects,
+                  //   0
+                  // );
+                  // translateChunk({
+                  //   lang: languageObject.key,
+                  //   data: fileChunks[languageObject.chunkPosition].data,
+                  //   inputLanguage,
+                  //   mode,
+                  //   setTranslation,
+                  //   openAIKey,
+                  //   setLanguagesObjects,
+                  //   chunkPosition: languageObject.chunkPosition,
+                  // });
+                }
               >
                 Retry
               </Button>

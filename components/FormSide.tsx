@@ -13,6 +13,7 @@ import {
   LanguagesAvailable,
   languageNames,
 } from '@/types/LanguagesAvailable';
+import {LastProcessed} from '@/types/LastProcessed';
 import {translateCSV} from '@/utils/translateCSV';
 import {Mode} from 'fs';
 import {useEffect, useState} from 'react';
@@ -44,6 +45,9 @@ export const FormSide = ({
   const [file, setFile] = useState<FileUploaded | null>(null);
   const [fileChunks, setFileChunks] = useState<LanguageChunk[] | null>(null);
   const [languagesObject, setLanguagesObjects] = useState<LanguageObject[]>([]);
+  const [lastProcessed, setLastProcessed] = useState<LastProcessed | null>(
+    null
+  );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -87,6 +91,8 @@ export const FormSide = ({
         outputLanguages,
         mode,
         openAIKey,
+        lastProcessed,
+        setLastProcessed,
       });
     } else {
       translateJSON({
@@ -212,6 +218,10 @@ export const FormSide = ({
                   setTranslation={setTranslation}
                   openAIKey={openAIKey}
                   setLanguagesObjects={setLanguagesObjects}
+                  setTranslationStatus={setTranslationStatus}
+                  outputLanguages={outputLanguages}
+                  lastProcessed={lastProcessed}
+                  setLastProcessed={setLastProcessed}
                 />
               </>
             )}

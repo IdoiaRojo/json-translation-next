@@ -19,7 +19,7 @@ const Home: NextPage<Props> = () => {
     <div
       className={`${
         fileType === 'csv' ? 'flex-col' : 'flex-row'
-      } min-h-screen flex  items-start justify-between`}
+      } min-h-screen flex  items-start justify-between overflow-hidden`}
     >
       <div
         className={`${

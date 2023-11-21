@@ -18,7 +18,8 @@ export const updateTranslationStatus = (
             ...chunk,
             status,
             ...(time !== undefined && {time}),
-            chunkPosition: position,
+            chunkPosition:
+              status === 'completed' ? chunk.chunksCount : position,
           }
         : chunk
     )

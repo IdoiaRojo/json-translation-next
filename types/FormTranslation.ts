@@ -2,6 +2,7 @@ import {SetStateAction} from 'react';
 import {LanguageChunk} from './LanguageChunk';
 import {LanguageObject} from './LanguageObject';
 import {LanguagesAvailable} from './LanguagesAvailable';
+import {LastProcessed} from './LastProcessed';
 import {Translation} from './Translation';
 import {TranslationStatus} from './TranslationStatus';
 
@@ -24,4 +25,6 @@ export interface FormTranslation {
   translation: Translation | null;
   openAIKey: string;
   setFileChunks: React.Dispatch<SetStateAction<LanguageChunk[]>>;
+  lastProcessed: LastProcessed;
+  setLastProcessed: React.Dispatch<SetStateAction<LastProcessed>>;
 }
