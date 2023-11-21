@@ -1,53 +1,55 @@
-// export const apiCall = async ({
-//   text,
-//   inputLanguage,
-//   outputLanguage,
-//   mode,
-//   openAIKey,
-// }: {
-//   text: string;
-//   inputLanguage;
-//   outputLanguage;
-//   mode;
-//   openAIKey: string;
-// }): Promise<any> => {
-//   try {
-//     const response = await fetch('/api/process', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         text,
-//         inputLanguage,
-//         outputLanguage,
-//         mode,
-//         openAIKey,
-//       }),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error(`API request failed with status ${response.status}`);
-//     }
-
-//     const responseData = await response.json();
-
-//     if (!responseData.success) {
-//       console.error('API request was not successful:', responseData.error);
-//       return null;
-//     }
-
-//     const translationsArray = Object.values(
-//       responseData.data.data || responseData.data
-//     );
-//     return {data: translationsArray};
-//   } catch (error) {
-//     console.error('An error occurred while making the API request:', error);
-//     return null;
-//   }
-// };
+import {FormTranslation} from '@/types/FormTranslation';
 
 export const apiCall = async ({
+  text,
+  inputLanguage,
+  outputLanguage,
+  mode,
+  openAIKey,
+}: {
+  text: string;
+  inputLanguage: FormTranslation['inputLanguage'];
+  outputLanguage: FormTranslation['outputLanguage'];
+  mode: FormTranslation['mode'];
+  openAIKey: FormTranslation['openAIKey'];
+}): Promise<any> => {
+  try {
+    const response = await fetch('/api/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text,
+        inputLanguage,
+        outputLanguage,
+        mode,
+        openAIKey,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    if (!responseData.success) {
+      console.error('API request was not successful:', responseData.error);
+      return null;
+    }
+
+    const translationsArray = Object.values(
+      responseData.data.data || responseData.data
+    );
+    return {data: translationsArray};
+  } catch (error) {
+    console.error('An error occurred while making the API request:', error);
+    return null;
+  }
+};
+
+/* export const apiCall = async ({
   text,
   inputLanguage,
   outputLanguage,
@@ -91,3 +93,4 @@ export const apiCall = async ({
     }, 1500); // Simula una respuesta después de 2 segundos
   });
 };
+*/
